@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"crypto/sha512"
 	"encoding/base64"
+	"errors"
 
 	"golang.org/x/crypto/sha3"
 )
@@ -18,13 +19,16 @@ import (
 		- err - error - error encountered when hashing
 */
 func Hash(password, algorithm string) (string, error) {
+	if password == "" {
+		return "", errors.New("no password provided in request")
+	}
 	switch algorithm {
 	case "SHA256":
-		return hashSHA512(password)
+		return hashSHA256(password)
 	case "SHA512":
 		return hashSHA512(password)
 	case "MD5":
-		return hashSHA512(password)
+		return hashMD5(password)
 	default:
 		return hashSHA3(password)
 	}
@@ -64,7 +68,7 @@ func hashMD5(password string) (string, error) {
 }
 
 func hashSHA3(password string) (string, error) {
-	hasher := sha3.New256()
+	hasher := sha3.New512()
 	_, err := hasher.Write([]byte(password))
 	if err != nil {
 		return "", err
