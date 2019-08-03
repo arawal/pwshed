@@ -1,4 +1,4 @@
-# pwshed
+# pwshed (PassWord haSHED)
 
 ### API
 
