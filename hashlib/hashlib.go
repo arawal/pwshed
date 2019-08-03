@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-// Hash hashes a password using SHA-3 or a user-preferred algorithm
+// Hash acts as the common handler to delegate the hashing based on the provided algorithm
 /*
 	Input:
 		- password - string - clear text password to be hashed
@@ -34,6 +34,14 @@ func Hash(password, algorithm string) (string, error) {
 	}
 }
 
+// hashSHA256 hashes a password using SHA-256 algorithm
+/*
+	Input:
+		- password - string - clear text password to be hashed
+	Output:
+		- pwshed - string - base64 encoded hash of the password
+		- err - error - error encountered when hashing
+*/
 func hashSHA256(password string) (string, error) {
 	hasher := sha512.New()
 	_, err := hasher.Write([]byte(password))
@@ -45,6 +53,14 @@ func hashSHA256(password string) (string, error) {
 	return base64.StdEncoding.EncodeToString(hashed), nil
 }
 
+// hashSHA512 hashes a password using SHA-512 algorithm
+/*
+	Input:
+		- password - string - clear text password to be hashed
+	Output:
+		- pwshed - string - base64 encoded hash of the password
+		- err - error - error encountered when hashing
+*/
 func hashSHA512(password string) (string, error) {
 	hasher := sha512.New()
 	_, err := hasher.Write([]byte(password))
@@ -56,6 +72,14 @@ func hashSHA512(password string) (string, error) {
 	return base64.StdEncoding.EncodeToString(hashed), nil
 }
 
+// hashMD5 hashes a password using MD5 algorithm
+/*
+	Input:
+		- password - string - clear text password to be hashed
+	Output:
+		- pwshed - string - base64 encoded hash of the password
+		- err - error - error encountered when hashing
+*/
 func hashMD5(password string) (string, error) {
 	hasher := md5.New()
 	_, err := hasher.Write([]byte(password))
@@ -67,6 +91,14 @@ func hashMD5(password string) (string, error) {
 	return base64.StdEncoding.EncodeToString(hashed), nil
 }
 
+// hashSHA3 hashes a password using SHA-3 algorithm
+/*
+	Input:
+		- password - string - clear text password to be hashed
+	Output:
+		- pwshed - string - base64 encoded hash of the password
+		- err - error - error encountered when hashing
+*/
 func hashSHA3(password string) (string, error) {
 	hasher := sha3.New512()
 	_, err := hasher.Write([]byte(password))

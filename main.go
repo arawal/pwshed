@@ -8,25 +8,17 @@ import (
 )
 
 func main() {
-	// Init config
-	// Get user input
-	// expects: password, hash algorithm (optional)
+	// set up and parse command line flags
 	password := flag.String("password", "", "Your secure password")
 	hashAlg := flag.String("alg", "SHA3", "hashing algorithm to use")
-
 	flag.Parse()
 
-	if *password == "" {
-		fmt.Println("missing required -password argument")
+	err := validateInput(*password, *hashAlg)
+	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
-	if *hashAlg != "MD5" && *hashAlg != "SHA256" && *hashAlg != "SHA512" && *hashAlg != "SHA3" && *hashAlg != "" {
-		fmt.Println("we currently only support SHA256, SHA512, MD5 and SHA3 algorithms")
-		return
-	}
-
-	// Hash input
 	result, err := hashlib.Hash(*password, *hashAlg)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -34,4 +26,17 @@ func main() {
 		fmt.Println(result)
 	}
 	return
+}
+
+func validateInput(password, hashAlg string) error {
+	// input validation
+	if password == "" {
+		return fmt.Errorf("missing required -password argument")
+	}
+
+	if hashAlg != "MD5" && hashAlg != "SHA256" && hashAlg != "SHA512" && hashAlg != "SHA3" && hashAlg != "" {
+		return fmt.Errorf("we currently only support SHA256, SHA512, MD5 and SHA3 algorithms")
+	}
+
+	return nil
 }
