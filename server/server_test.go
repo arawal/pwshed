@@ -82,4 +82,16 @@ func TestRouter(t *testing.T) {
 		assert.Equal(t, w.Code, http.StatusInternalServerError)
 		assert.Equal(t, w.Body.String(), expected)
 	})
+
+	t.Run("test_non_existent_endpoint", func(t *testing.T) {
+		w := makeAPICall("GET", "/SOMERANDOMENDPOINT", nil)
+
+		assert.Equal(t, w.Code, http.StatusNotFound)
+	})
+
+	t.Run("test_invalid_method", func(t *testing.T) {
+		w := makeAPICall("POST", "/", nil)
+
+		assert.Equal(t, w.Code, http.StatusNotFound)
+	})
 }
