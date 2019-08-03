@@ -43,7 +43,7 @@ func TestRouter(t *testing.T) {
 		formData := url.Values{}
 		formData.Add("password", "securestring")
 
-		w := makeAPICall("POST", "/hash", formData)
+		w := makeAPICall("POST", "/hash?timer=false", formData)
 
 		expected := "chBQTKUoivgDzB3H9zDrIjYsVJvFhwGZ1ZwI1ZsQecttcTcoOWk07K1SyPfhfzsNf6XmBys0stnbQhHGku8qgw=="
 		assert.Equal(t, w.Code, http.StatusOK)
@@ -54,7 +54,7 @@ func TestRouter(t *testing.T) {
 		formData := url.Values{}
 		formData.Add("password", "securestring")
 
-		w := makeAPICall("POST", "/hash?alg=SHA512", formData)
+		w := makeAPICall("POST", "/hash?alg=SHA512&timer=false", formData)
 
 		expected := "8qZk9CXChWG3k63kB2L3Iwl8vPXgpK99lgvebvOXxfyoT1J9SCnPzBxUorEYZsAe+vqArWdOAMChEZR3ng6jOw=="
 		assert.Equal(t, w.Code, http.StatusOK)
