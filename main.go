@@ -6,9 +6,11 @@ import (
 
 	"github.com/arawal/pwshed/hashlib"
 	"github.com/arawal/pwshed/server"
+	"github.com/arawal/pwshed/stats"
 )
 
 func main() {
+	stats.Init()
 	// set up and parse command line flags
 	cli := flag.Bool("cli", false, "Launch CLI or the API version")
 	password := flag.String("password", "", "Your secure password")

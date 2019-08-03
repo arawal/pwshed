@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 
 	"github.com/arawal/pwshed/hashlib"
+	"github.com/arawal/pwshed/stats"
 	"github.com/gin-gonic/gin"
 )
 
@@ -52,7 +54,15 @@ func initRouter() *gin.Engine {
 		})
 
 		api.POST("/hash", func(c *gin.Context) {
-			timer := time.NewTimer(5 * time.Second)
+			startTime := time.Now()
+			td := 5
+			var err error
+			td, err = strconv.Atoi(c.Query("timer"))
+			if err != nil {
+				td = 5
+			}
+			timer := time.NewTimer(time.Duration(td) * time.Second)
+
 			password := c.PostForm("password")
 
 			// optional: allow algorithm choice
@@ -66,10 +76,20 @@ func initRouter() *gin.Engine {
 
 			<-timer.C
 			c.String(http.StatusOK, result)
+			stats.UpdateStats(float64(time.Since(startTime)) / float64(time.Millisecond))
 		})
 
 		api.GET("/shutdown", func(c *gin.Context) {
 			syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+		})
+
+		api.GET("/stats", func(c *gin.Context) {
+			data, err := stats.GetCurrentStats()
+			if err != nil {
+				c.String(http.StatusInternalServerError, err.Error())
+				return
+			}
+			c.JSON(http.StatusOK, data)
 		})
 	}
 	return router
@@ -97,5 +117,6 @@ func handleGracefulShutdown(srv *http.Server) {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
 	}
-	log.Println("Server gracefully exiting")
+	log.Println("Server gracefully exited")
+	stats.UpdateStatsInStore()
 }
