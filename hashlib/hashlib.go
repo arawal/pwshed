@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -29,8 +30,10 @@ func Hash(password, algorithm string) (string, error) {
 		return hashSHA512(password)
 	case "MD5":
 		return hashMD5(password)
-	default:
+	case "SHA3":
 		return hashSHA3(password)
+	default:
+		return hashBcrypt(password)
 	}
 }
 
@@ -108,4 +111,17 @@ func hashSHA3(password string) (string, error) {
 
 	hashed := hasher.Sum(nil)
 	return base64.StdEncoding.EncodeToString(hashed), nil
+}
+
+// hashBcrypt hashes a password using bcrypt algorithm
+/*
+	Input:
+		- password - string - clear text password to be hashed
+	Output:
+		- pwshed - string - base64 encoded hash of the password
+		- err - error - error encountered when hashing
+*/
+func hashBcrypt(password string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return base64.StdEncoding.EncodeToString(hashed), err
 }

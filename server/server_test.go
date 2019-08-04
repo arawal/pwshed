@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/magiconair/properties/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var router *gin.Engine
@@ -44,10 +46,17 @@ func TestRouter(t *testing.T) {
 		formData.Add("password", "securestring")
 
 		w := makeAPICall("POST", "/hash?timer=false", formData)
-
-		expected := "chBQTKUoivgDzB3H9zDrIjYsVJvFhwGZ1ZwI1ZsQecttcTcoOWk07K1SyPfhfzsNf6XmBys0stnbQhHGku8qgw=="
 		assert.Equal(t, w.Code, http.StatusOK)
-		assert.Equal(t, w.Body.String(), expected)
+
+		result := w.Body.String()
+		actual, err := base64.StdEncoding.DecodeString(result)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		err = bcrypt.CompareHashAndPassword(actual, []byte("securestring"))
+
+		assert.Equal(t, nil, err)
 	})
 
 	t.Run("test_valid_input_with_alg_choice", func(t *testing.T) {

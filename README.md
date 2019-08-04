@@ -1,5 +1,12 @@
 # pwshed (PassWord haSHED)
 
+### Hashing standards
+
+https://security.blogoverflow.com/2013/09/about-secure-password-hashing/
+While SHA-3 is emerging as the standard for hashing, it is not necessarily the best standard for password hashing. The document above details different hashing algorithms and their properties.
+
+For the purpose of this project, we allow the user to use an algorithm of your choice. But, we fall back to bcrypt as the standard.
+
 ### API
 
 API version of the tool allows you to make API calls to a http server with the password and optinally the algorithm to hash it with. The server responds after 5 seconds.
