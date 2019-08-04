@@ -13,7 +13,7 @@ type Stats struct {
 	TotalRespTime float64 `json:"-"`
 }
 
-var stats Stats
+var CurrentStats Stats
 
 // Init initializes stats with either past data or a fresh start
 /*
@@ -23,7 +23,7 @@ var stats Stats
 		- none
 */
 func Init() {
-	stats = Stats{}
+	CurrentStats = Stats{}
 	GetStatsFromStore()
 }
 
@@ -35,13 +35,13 @@ func Init() {
 		- none
 */
 func UpdateStats(respTime float64) {
-	stats.Count++
-	stats.TotalRespTime += respTime
+	CurrentStats.Count++
+	CurrentStats.TotalRespTime += respTime
 
-	if stats.Count == 0 {
-		stats.AvgRespTime = 0.0
+	if CurrentStats.Count == 0 {
+		CurrentStats.AvgRespTime = 0.0
 	} else {
-		stats.AvgRespTime = stats.TotalRespTime / float64(stats.Count)
+		CurrentStats.AvgRespTime = CurrentStats.TotalRespTime / float64(CurrentStats.Count)
 	}
 }
 
@@ -54,7 +54,7 @@ func UpdateStats(respTime float64) {
 		- err - error - error encountered when marshalling
 */
 func GetCurrentStats() (data map[string]interface{}, err error) {
-	d, err := json.Marshal(stats)
+	d, err := json.Marshal(CurrentStats)
 	if err != nil {
 		return nil, err
 	}
@@ -72,12 +72,12 @@ func GetCurrentStats() (data map[string]interface{}, err error) {
 */
 func GetStatsFromStore() {
 	file, err := ioutil.ReadFile("stats/stats.json")
-	err = json.Unmarshal([]byte(file), &stats)
+	err = json.Unmarshal([]byte(file), &CurrentStats)
 	if err != nil {
 		log.Println("Could not get past stats...resetting stats")
 		return
 	}
-	stats.TotalRespTime = stats.AvgRespTime * float64(stats.Count)
+	CurrentStats.TotalRespTime = CurrentStats.AvgRespTime * float64(CurrentStats.Count)
 }
 
 // UpdateStatsInStore store current stats toa file store
@@ -88,7 +88,7 @@ func GetStatsFromStore() {
 		- none
 */
 func UpdateStatsInStore() {
-	file, err := json.MarshalIndent(stats, "", " ")
+	file, err := json.MarshalIndent(CurrentStats, "", " ")
 	if err != nil {
 		log.Fatalf("COuld not update stats in store: %s", err.Error())
 		return

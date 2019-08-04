@@ -5,12 +5,15 @@ import (
 	"fmt"
 
 	"github.com/arawal/pwshed/hashlib"
+	"github.com/arawal/pwshed/logger"
 	"github.com/arawal/pwshed/server"
 	"github.com/arawal/pwshed/stats"
 )
 
 func main() {
 	stats.Init()
+	logger.Init()
+
 	// set up and parse command line flags
 	cli := flag.Bool("cli", false, "Launch CLI or the API version")
 	password := flag.String("password", "", "Your secure password")
@@ -22,14 +25,15 @@ func main() {
 	} else {
 		err := validateInput(*password, *hashAlg)
 		if err != nil {
-			fmt.Println(err)
+			logger.Error("cli", err.Error())
 			return
 		}
 
 		result, err := hashlib.Hash(*password, *hashAlg)
 		if err != nil {
-			fmt.Println(err.Error())
+			logger.Error("cli", err.Error())
 		} else {
+			logger.Info("cli", fmt.Sprintf("passwords hashed this session: %d", stats.CurrentStats.Count))
 			fmt.Println(result)
 		}
 		return
